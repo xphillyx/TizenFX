@@ -15,6 +15,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-    - run: |
+    - name: Test
+      run: |
         echo "${{ github.event.inputs.target }}"
 
