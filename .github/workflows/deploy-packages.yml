@@ -15,7 +15,14 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
+
+    - name: Get Branch Metadata
+      id: metadata
+      uses: TizenAPI/tizenfx-build-actions/branch-metadata@master
+      with:
+        ref: ${{ github.event.inputs.target }}
+
     - name: Test
       run: |
-        echo "${{ github.event.inputs.target }}"
+        echo "${{ steps.metadata.outputs.tizen-branch }}"
 
