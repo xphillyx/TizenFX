@@ -11,16 +11,23 @@ on:
   # schedule:
   # - cron: "0 16 * * *"
 
+env:
+  TARGET_BRANCH: ${{ github.event.inputs.target }}
+
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
+    - uses: actions/checkout@v2
+      with:
+        ref: ${{ env.TARGET_BRANCH }}
+        fetch-depth: 0
 
     - name: Get Branch Metadata
       id: metadata
       uses: TizenAPI/tizenfx-build-actions/branch-metadata@master
       with:
-        ref: ${{ github.event.inputs.target }}
+        ref: ${{ env.TARGET_BRANCH }}
 
     - name: Test
       run: |
