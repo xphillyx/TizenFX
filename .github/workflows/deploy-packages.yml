@@ -29,7 +29,16 @@ jobs:
       with:
         ref: ${{ env.TARGET_BRANCH }}
 
+    - name: Get Version
+      id: version
+      env:
+        VERSION_PREFIX: ${{ steps.metadata.outputs.version-prefix }}
+      run: |
+        VERSION=$VERSION_PREFIX.$((10000+$(git rev-list --count HEAD)))
+        echo VERSION=$VERSION
+        echo "::set-output name=version::$VERSION"
+
     - name: Test
       run: |
-        echo "${{ steps.metadata.outputs.tizen-branch }}"
+        echo "${{ steps.version.outputs.version }}"
 
