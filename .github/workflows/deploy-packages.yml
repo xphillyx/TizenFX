@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       target:
-        description: 'Target branch to deploy'
+        description: 'Branch to deploy'
         required: true
         default: 'master'
       deploy_to_myget:
