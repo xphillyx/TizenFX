@@ -4,11 +4,15 @@ on:
   workflow_dispatch:
     inputs:
       target:
-        description: 'Target Branch to Deploy'
+        description: 'Target branch to deploy'
         required: true
         default: 'master'
       deploy_to_myget:
-        description: 'If true, NuGet packages will be deployed to MyGet'
+        description: 'Deploy packages to MyGet?'
+        required: true
+        default: true
+      deploy_to_tizen:
+        description: 'Submit changes to Tizen?'
         required: true
         default: true
 
