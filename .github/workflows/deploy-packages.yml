@@ -16,14 +16,11 @@ on:
         required: true
         default: true
 
-  # schedule:
-  # - cron: "0 16 * * *"
-
 env:
   TARGET_BRANCH: ${{ github.event.inputs.target }}
 
 jobs:
-  test:
+  deploy:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -61,7 +58,34 @@ jobs:
       run: |
         dotnet nuget push Artifacts/*.nupkg -k $APIKEY -s $NUGET_SOURCE -t 3000
 
-    - name: Test
-      run: |
-        echo "${{ steps.version.outputs.version }}"
+    - name: Setup SSH private keys
+      uses: webfactory/ssh-agent@v0.5.2
+      with:
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
+    - name: Submit changes to Tizen
+      if: github.event.inputs.deploy_to_tizen == 'true'
+      env:
+        VERSION: ${{ steps.version.outputs.version }}
+        GERRIT_BRANCH: ${{ steps.metadata.outputs.tizen-branch }}
+        GERRIT_URL: ssh://dotnetbuild@review.tizen.org:29418/platform/core/csapi/tizenfx
+      run: |
+        git config --global user.name "TizenAPI-Bot"
+        git config --global user.email "tizenapi@samsung.com"
+        git config core.sshCommand "ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
+        git remote add gerrit $GERRIT_URL
+        git fetch gerrit $GERRIT_BRANCH
+        git checkout -t gerrit/$GERRIT_BRANCH
+        git merge --no-edit -s recursive -X theirs origin/$TARGET_BRANCH
+        ./packaging/makespec.sh -r $VERSION -n $VERSION -i $VERSION
+        git add packaging/
+        if [ $(git diff --cached --numstat | wc -l) -eq 0 ]; then
+          echo "## no changes to sync"
+          exit 0
+        fi
+        SUBMIT_TAG=submit/$GERRIT_BRANCH/$(date '+%Y%m%d.%H%M%S')
+        echo SUBMIT_TAG=$SUBMIT_TAG
+        git commit -m "Release $VERSION"
+        git tag -m "Release $VERSION" $SUBMIT_TAG
+        echo git push -f gerrit HEAD:$GERRIT_BRANCH
+        echo git push gerrit refs/tags/$SUBMIT_TAG
