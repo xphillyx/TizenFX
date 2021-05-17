@@ -7,6 +7,10 @@ on:
         description: 'Target Branch to Deploy'
         required: true
         default: 'master'
+      deploy_to_myget:
+        description: 'If true, NuGet packages will be deployed to MyGet'
+        required: true
+        default: true
 
   # schedule:
   # - cron: "0 16 * * *"
@@ -37,6 +41,21 @@ jobs:
         VERSION=$VERSION_PREFIX.$((10000+$(git rev-list --count HEAD)))
         echo VERSION=$VERSION
         echo "::set-output name=version::$VERSION"
+
+    - name: Build
+      env:
+        VERSION: ${{ steps.version.outputs.version }}
+      run: |
+        ./build.sh full
+        ./build.sh pack $VERSION
+
+    - name: Deploy NuGet packages to MyGet
+      if: github.event.inputs.deploy_to_myget == 'true'
+      env:
+        NUGET_SOURCE: https://tizen.myget.org/F/dotnet-test/api/v2/package
+        APIKEY: ${{ secrets.MYGET_APIKEY }}
+      run: |
+        dotnet nuget push Artifacts/*.nupkg -k $APIKEY -s $NUGET_SOURCE -t 3000
 
     - name: Test
       run: |
