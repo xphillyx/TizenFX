@@ -50,6 +50,13 @@ jobs:
         ./build.sh full
         ./build.sh pack $VERSION
 
+    - name: Tag Version
+      env:
+        VERSION: ${{ steps.version.outputs.version }}
+      run: |
+        git tag -fa "v$VERSION" -m "Release $VERSION"
+        git push -f --tags origin refs/tags/"v$VERSION"
+
     - name: Deploy NuGet packages to MyGet
       if: github.event.inputs.deploy_to_myget == 'true'
       env:
@@ -87,5 +94,5 @@ jobs:
         echo SUBMIT_TAG=$SUBMIT_TAG
         git commit -m "Release $VERSION"
         git tag -m "Release $VERSION" $SUBMIT_TAG
-        echo git push -f gerrit HEAD:$GERRIT_BRANCH
-        echo git push gerrit refs/tags/$SUBMIT_TAG
+        git push -f gerrit HEAD:$GERRIT_BRANCH
+        git push gerrit refs/tags/$SUBMIT_TAG
