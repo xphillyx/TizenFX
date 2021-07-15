@@ -62,6 +62,8 @@ namespace Tizen.NUI.BaseComponents
         {
             var viewStyle = (ViewStyle)bindable;
             viewStyle.size = newValue == null ? null : new Size((Size2D)newValue);
+            viewStyle.widthSpecification = null;
+            viewStyle.heightSpecification = null;
         },
         defaultValueCreator: (bindable) =>
         {
@@ -117,6 +119,7 @@ namespace Tizen.NUI.BaseComponents
             var viewStyle = (ViewStyle)bindable;
             if (newValue != null)
             {
+                viewStyle.widthSpecification = null;
                 if (viewStyle.size == null)
                 {
                     if ((float)newValue == 0) return;
@@ -136,6 +139,7 @@ namespace Tizen.NUI.BaseComponents
             var viewStyle = (ViewStyle)bindable;
             if (newValue != null)
             {
+                viewStyle.heightSpecification = null;
                 if (viewStyle.size == null)
                 {
                     if ((float)newValue == 0) return;
@@ -147,6 +151,79 @@ namespace Tizen.NUI.BaseComponents
         {
             return ((ViewStyle)bindable).size?.Height;
         });
+
+        /// <summary> Bindable property of WidthSpecification. </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static readonly BindableProperty WidthSpecificationProperty = BindableProperty.Create(nameof(WidthSpecification), typeof(int?), typeof(ViewStyle), null, propertyChanged: (bindable, oldValue, newValue) =>
+        {
+            var viewStyle = (ViewStyle)bindable;
+            if (newValue == null)
+            {
+                viewStyle.widthSpecification = null;
+                return;
+            }
+
+            if (newValue is int newWidthSpecification)
+            {
+                if (newWidthSpecification >= 0) // If it is not a layout parmameter, set size.
+                {
+                    viewStyle.widthSpecification = null;
+                    viewStyle.SizeWidth = (float)newWidthSpecification;
+                }
+                else
+                {
+                    viewStyle.widthSpecification = newWidthSpecification;
+                    viewStyle.size = null;
+                }
+            }
+
+            // (1) -> OK
+            // WidthSpecification = -1
+            // Size = 0, 100 => width will be 0. specification is removed.
+
+            // (2)
+            // Size = 0, 100
+            // WidthSpecification = -1 => size set first and specification should be stored.
+
+            // (3)
+            // Size = 0, 100
+            // WidthSpecification = 50 => size set first and specification should be stored.
+
+            // (4)
+            // SizeHeight = 100
+            // WidthSpecification = -1
+
+            // (5) -> OK
+            // SizeHeight = 100
+            // WidthSpecification = 200
+            
+
+            if (newValue != null)
+            {
+                if (viewStyle.size == null)
+                {
+                    if ((float)newValue == 0) return;
+                }
+                viewStyle.size = new Size((float)newValue, viewStyle.size?.Height ?? 0);
+            }
+        },
+        defaultValueCreator: (bindable) => ((ViewStyle)bindable).widthSpecification);
+
+        /// <summary> Bindable property of HeightSpecification. </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static readonly BindableProperty HeightSpecificationProperty = BindableProperty.Create(nameof(HeightSpecification), typeof(int?), typeof(ViewStyle), null, propertyChanged: (bindable, oldValue, newValue) =>
+        {
+            var viewStyle = (ViewStyle)bindable;
+            if (newValue != null)
+            {
+                if (viewStyle.size == null)
+                {
+                    if ((float)newValue == 0) return;
+                }
+                viewStyle.size = new Size((float)newValue, viewStyle.size?.Height ?? 0);
+            }
+        },
+        defaultValueCreator: (bindable) => ((ViewStyle)bindable).heightSpecification);
 
         /// <summary> Bindable property of Position. Please do not open it. </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
@@ -286,6 +363,8 @@ namespace Tizen.NUI.BaseComponents
         {
             var viewStyle = (ViewStyle)bindable;
             viewStyle.size = (Size)newValue;
+            viewStyle.widthSpecification = null;
+            viewStyle.heightSpecification = null;
             if (viewStyle.size != null && viewStyle.size.Width == 0 && viewStyle.size.Height == 0)
             {
                 viewStyle.size = null;

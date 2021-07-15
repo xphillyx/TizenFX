@@ -52,6 +52,8 @@ namespace Tizen.NUI.BaseComponents
         private float? borderlineWidth;
         private Color borderlineColor;
         private float? borderlineOffset;
+        private int? widthSpecification;
+        private int? heightSpecification;
 
         private Selector<ImageShadow> imageShadow;
         private Selector<Shadow> boxShadow;
@@ -206,6 +208,26 @@ namespace Tizen.NUI.BaseComponents
         {
             get => (float?)GetValue(SizeHeightProperty);
             set => SetValue(SizeHeightProperty, value);
+        }
+
+        ///<summary>
+        /// The size of the width, <see cref="LayoutParamPolicies"/> values or exact value.
+        ///</summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public int? WidthSpecification
+        {
+            get => (int?)GetValue(WidthSpecificationProperty);
+            set => SetValue(WidthSpecificationProperty, value);
+        }
+
+        ///<summary>
+        /// The size for the height, <see cref="LayoutParamPolicies"/> values or exact value.
+        ///</summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public int? HeightSpecification
+        {
+            get => (int?)GetValue(HeightSpecificationProperty);
+            set => SetValue(HeightSpecificationProperty, value);
         }
 
         /// <summary>

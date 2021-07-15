@@ -2170,26 +2170,8 @@ namespace Tizen.NUI.BaseComponents
         /// <since_tizen> 6 </since_tizen>
         public int WidthSpecification
         {
-            get
-            {
-                return widthPolicy;
-            }
-            set
-            {
-                if (value == widthPolicy)
-                    return;
-
-                widthPolicy = value;
-                if (widthPolicy >= 0)
-                {
-                    if (heightPolicy >= 0) // Policy an exact value
-                    {
-                        // Create Size2D only both _widthPolicy and _heightPolicy are set.
-                        Size2D = new Size2D(widthPolicy, heightPolicy);
-                    }
-                }
-                layout?.RequestLayout();
-            }
+            get =>  (int)GetValue(WidthSpecificationProperty);
+            set => SetValue(WidthSpecificationProperty, value);
         }
 
         ///<summary>
@@ -2213,26 +2195,8 @@ namespace Tizen.NUI.BaseComponents
         /// <since_tizen> 6 </since_tizen>
         public int HeightSpecification
         {
-            get
-            {
-                return heightPolicy;
-            }
-            set
-            {
-                if (value == heightPolicy)
-                    return;
-
-                heightPolicy = value;
-                if (heightPolicy >= 0)
-                {
-                    if (widthPolicy >= 0) // Policy an exact value
-                    {
-                        // Create Size2D only both _widthPolicy and _heightPolicy are set.
-                        Size2D = new Size2D(widthPolicy, heightPolicy);
-                    }
-                }
-                layout?.RequestLayout();
-            }
+            get =>  (int)GetValue(HeightSpecificationProperty);
+            set => SetValue(HeightSpecificationProperty, value);
         }
 
         ///<summary>

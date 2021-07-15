@@ -1493,6 +1493,56 @@ namespace Tizen.NUI.BaseComponents
         }));
 
         /// <summary>
+        /// WidthSpecificationProperty
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static readonly BindableProperty WidthSpecificationProperty = BindableProperty.Create(nameof(WidthSpecification), typeof(int), typeof(View), LayoutParamPolicies.WrapContent, propertyChanged: (BindableProperty.BindingPropertyChangedDelegate)((bindable, oldValue, newValue) =>
+        {
+            if (newValue is int newWidthSpecification)
+            {
+                var view = (View)bindable;
+                if (newWidthSpecification == view.widthPolicy)
+                {
+                    return;
+                }
+                
+                view.widthPolicy = newWidthSpecification;
+                if (newWidthSpecification >= 0 && view.heightPolicy >= 0) // Policy an exact value
+                {
+                    // Create Size2D only both widthPolicy and heightPolicy are set.
+                    view.Size2D = new Size2D(newWidthSpecification, view.heightPolicy);
+                }
+                view.layout?.RequestLayout();
+            }
+        }),
+        defaultValueCreator: (BindableProperty.CreateDefaultValueDelegate)((bindable) => ((View)bindable).widthPolicy));
+
+        /// <summary>
+        /// HeightSpecificationProperty
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static readonly BindableProperty HeightSpecificationProperty = BindableProperty.Create(nameof(WidthSpecification), typeof(int), typeof(View), LayoutParamPolicies.WrapContent, propertyChanged: (BindableProperty.BindingPropertyChangedDelegate)((bindable, oldValue, newValue) =>
+        {
+            if (newValue is int newHeightSpecification)
+            {
+                var view = (View)bindable;
+                if (newHeightSpecification == view.heightPolicy)
+                {
+                    return;
+                }
+                
+                view.heightPolicy = newHeightSpecification;
+                if (newHeightSpecification >= 0 && view.widthPolicy >= 0) // Policy an exact value
+                {
+                    // Create Size2D only both widthPolicy and heightPolicy are set.
+                    view.Size2D = new Size2D(view.widthPolicy, newHeightSpecification);
+                }
+                view.layout?.RequestLayout();
+            }
+        }),
+        defaultValueCreator: (BindableProperty.CreateDefaultValueDelegate)((bindable) => ((View)bindable).heightPolicy));
+
+        /// <summary>
         /// UpdateSizeHintProperty
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
